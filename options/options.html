@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>prompt recall options</title>
+  <link rel="stylesheet" href="options.css">
+  <link rel="stylesheet" href="../popup/popup.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <img id="banner-logo" src="../assets/images/banner_logo.png" alt="banner logo">
+  <div class="options-container">
+    <section class="section-description">
+      <h2>what is prompt recall?</h2>
+      <p>prompt recall is a chrome extension designed to help you save and manage your ai prompts directly from various ai tool websites. all your prompts are saved securely in your chrome storage, ensuring your privacy and allowing seamless synchronization across your devices. it provides a seamless experience for prompt engineers, writers, and anyone who frequently interacts with large language models, allowing you to build a personal library of useful prompts.</p>
+    </section>
+
+    <hr>
+
+    <section class="section-how-to">
+      <h2>how to use</h2>
+      <ol>
+        <li>visit any supported ai tool site (e.g., chatgpt, gemini).</li>
+        <li>type your prompt and get a response.</li>
+        <li>prompt recall automatically saves your prompt.</li>
+        <li>open the extension popup to view, open, copy or delete your saved prompts.</li>
+        <li>manage prompts settings on this page, including which sites are captured from.</li>                
+      </ol>
+      <div class="button-group">
+        <button id="upgradeButtonOptions" class="button-primary"><img src="../assets/icons/upgrade.svg" alt="upgrade now">upgrade now</button>
+        <button id="reportBugButton" class="button-secondary"><img src="../assets/icons/bugs.svg" alt="report bug">report bug</button>
+        <button id="featureRequestButton" class="button-secondary"><img src="../assets/icons/bulb.svg" alt="feature request">feature request</button>
+        <button id="buyMeACoffeeButton" class="button-secondary"><img src="../assets/icons/coffee.svg" alt="buy me a coffee">buy me a coffee</button>
+      </div>
+    </section>
+
+    <hr>
+
+    <section class="section-prompts-summary">
+      <h2>your prompts</h2>
+      <p>you currently have <span id="promptCounter">0 prompts saved</span> <a href="#" id="upgradeLinkOptions" class="upgrade-link">upgrade for unlimited</a>.</p>
+    </section>
+
+    <hr>
+
+    <section class="section-manage-prompts">
+      <h2>manage prompts</h2>
+      <div class="option">
+          <button id="deleteAllButton" class="button-danger">delete all prompts</button>
+      </div>
+    </section>
+
+    <hr>
+
+    <section class="section-settings">
+      <h2>settings</h2>
+      <div class="option">
+        <label>
+          <input type="checkbox" id="toast-toggle">
+          show in-page notification when a prompt is saved
+        </label>
+      </div>
+    </section>
+
+    <hr>
+
+    <section class="section-supported-sites">
+      <h2>supported sites</h2>
+      <p class="description">untick a site to stop prompts from being saved.</p>
+      <div id="site-list">
+        <!-- checkboxes will be rendered here by options.js -->
+      </div>
+      <div class="option disabled-option">
+          <label>
+            <input type="checkbox" disabled>
+            add more (upgrade required)
+          </label>
+      </div>
+    </section>
+
+    <div id="status"></div>
+  </div>
+  
+</body>
+<script src="../config.js"></script>
+<script src="options.js"></script>
+</html>

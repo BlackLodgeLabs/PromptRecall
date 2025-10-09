@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prompt Recall</title>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="popup-container" role="dialog" aria-labelledby="popupTitle" aria-modal="true">
+    <header class="popup-header">
+      <div class="logo-text">
+        <div class="logo-icon" aria-hidden="true"></div>
+        <span id="popupTitle">prompt recall</span>
+      </div>
+      <div class="header-actions">
+        <button id="upgradeButton" class="action-button" title="upgrade"><img src="../assets/icons/upgrade.svg" alt="upgrade"></button>
+        <button id="bugButton" class="action-button" title="support"><img src="../assets/icons/help.svg" alt="support"></button>
+        <button id="optionsButton" class="action-button" title="options"><img src="../assets/icons/cog.svg" alt="options"></button>
+      </div>
+    </header>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="search prompts..." aria-label="Search prompts">
+      <button id="clearSearchButton" class="action-button" title="clear search" style="display: none;">&times;</button>
+      <div id="promptCountHeader" class="prompt-count-header"></div>
+    </div>
+    <div class="upgrade-container">
+      <a href="#" id="upgradeLink" class="upgrade-link" style="display: none;">upgrade for unlimited</a>
+    </div>
+
+    <table class="prompt-table">
+      <tbody id="promptList">
+        <!-- Prompts will be dynamically inserted here -->
+      </tbody>
+    </table>
+
+  </div>
+  
+  <script src="../config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

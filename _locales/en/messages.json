@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Prompt Recall",
+    "description": "The name of the extension."
+  },
+  "extDesc": {
+    "message": "Save and manage your favorite AI prompts from any webpage. Build your personal prompt library with ease.",
+    "description": "The description of the extension."
+  }
+}

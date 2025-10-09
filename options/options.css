@@ -1,0 +1,194 @@
+/* Options Page Specific Styles */
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #E6E5E5;
+    color: #1C1C1C;
+    margin: 0;
+    padding: 24px;
+}
+
+.options-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #FFFFFF;
+    padding: 24px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+h1 {
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: #3A506B;
+}
+
+h2 {
+    font-weight: 500;
+    font-size: 16px;
+    color: #3A506B;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 8px;
+}
+
+.option {
+    margin-bottom: 12px;
+}
+
+.option label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.option input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: #E63946;
+}
+
+#status {
+    margin-top: 16px;
+    color: #06D6A0;
+    font-weight: 500;
+}
+
+#banner-logo {
+  display: block;
+  margin: 0 auto;
+  width: 33%;
+}
+
+.button-danger {
+  background-color: #E63946;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 150ms ease-out;
+}
+
+.button-danger:hover {
+  background-color: #F25C5C;
+}
+
+/* New styles for sections */
+.section-description,
+.section-how-to,
+.section-prompts-summary,
+.section-settings,
+.section-supported-sites,
+.section-manage-prompts,
+.section-upgrade {
+  margin-bottom: var(--space-lg);
+}
+
+.section-description p,
+.section-how-to ol,
+.section-upgrade p,
+.section-upgrade ul {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.section-how-to ol {
+  padding-left: 20px;
+}
+
+.section-how-to li {
+  margin-bottom: var(--space-sm);
+}
+
+.section-prompts-summary #promptCounter {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.section-upgrade ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin-bottom: var(--space-md);
+}
+
+.section-upgrade li {
+  margin-bottom: var(--space-xs);
+}
+
+#upgradeButtonOptions {
+  background-color: var(--color-success);
+  white-space: nowrap;
+}
+
+#upgradeButtonOptions:hover {
+  background-color: #05a781; /* A darker shade of the success color */
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.button-secondary {
+  background-color: #3A506B;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 150ms ease-out;
+  white-space: nowrap;
+}
+
+.button-secondary:hover {
+  background-color: #4F6A8A;
+}
+
+.disabled-option label {
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.disabled-option input[type="checkbox"] {
+  cursor: not-allowed;
+}
+
+.button-group-text {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.text-button {
+  color: var(--color-link);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.text-button:hover {
+  color: var(--color-accent);
+}
+
+.button-secondary img, .button-primary img {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: middle;
+  filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+}
+
+.section-prompts-summary .upgrade-link {
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.section-how-to .button-group {
+  margin-top: var(--space-md);
+}

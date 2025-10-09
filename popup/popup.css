@@ -1,0 +1,305 @@
+/* Root Color Variables */
+:root {
+  --color-bg: #E6E5E5; /* off-white background */
+  --color-bg-white: #FFFFFF; /* popup, panels */
+  --color-text-primary: #1C1C1C; /* charcoal */
+  --color-text-secondary: #6B7280; /* muted meta text */
+  --color-accent: #E63946; /* red pill accent */
+  --color-accent-hover: #F25C5C; /* lighter red on hover */
+  --color-link: #3A506B; /* cool gray-blue for links */
+  --color-border: #E5E7EB; /* light border for cards */
+  --color-success: #06D6A0; /* feedback success */
+  --color-error: #F77F00; /* alerts */
+
+  --font-family: 'Montserrat', sans-serif;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+
+  /* Border Radius */
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-round: 50%;
+
+  /* Transition */
+  --transition-fast: 150ms ease-out;
+}
+
+/* Typography */
+body, .popup-ui, .options-ui, .website-body {
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  margin: 0;
+  padding: 0;
+  text-transform: lowercase;
+}
+
+h1 {
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: var(--space-md);
+}
+
+h2,
+label {
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--color-link);
+  margin-bottom: var(--space-sm);
+}
+
+p,
+.button-label,
+input,
+textarea {
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.meta-text {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+/* Buttons */
+.button-primary {
+  background-color: var(--color-accent);
+  color: #fff;
+  padding: var(--space-sm) var(--space-lg);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color var(--transition-fast);
+}
+
+.button-primary:hover,
+.button-primary:focus {
+  background-color: var(--color-accent-hover);
+  outline: none;
+}
+
+/* Links */
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a:hover,
+a:focus {
+  text-decoration: underline;
+  color: var(--color-accent-hover);
+}
+
+/* Popup UI Container */
+.popup-container {
+  width: 640px;
+  max-height: 600px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: var(--space-lg);
+  box-sizing: border-box;
+  background-color: var(--color-bg-white);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+/* Logo Icon with text */
+.logo-text {
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  background-image: url('../assets/icons/Logo_noBG.png');
+  background-size: cover;
+  margin-right: var(--space-sm);
+}
+
+.prompt-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-lg);
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.prompt-table th,
+.prompt-table td {
+  padding: var(--space-sm);
+  text-align: left;
+  font-size: 12px;
+}
+
+.prompt-table tr {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.prompt-table tr:last-child {
+  border-bottom: none; /* Remove border from the last row */
+}
+
+.prompt-table th {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  background-color: transparent;
+}
+
+
+
+.delete-all-button {
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  display: block;
+  margin: 0 auto;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.delete-all-header {
+  text-align: center;
+}
+
+#optionsButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+#optionsButton img {
+  width: 24px;
+  height: 24px;
+}
+
+/* Accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Prompt Actions */
+.prompt-actions {
+  display: flex;
+  gap: var(--space-xs); /* Small gap between buttons */
+  justify-content: center;
+  align-items: center;
+}
+
+.action-button {
+  background-color: transparent; /* No background */
+  border: none;
+  border-radius: var(--radius-sm);
+  width: 24px;
+  height: 24px;
+  font-size: 16px; /* Increased font size */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: filter var(--transition-fast);
+}
+
+.action-button img {
+  width: 16px;
+  height: 16px;
+}
+
+.link-button img,
+.copy-button img {
+  filter: invert(48%) sepia(6%) saturate(1461%) hue-rotate(176deg) brightness(93%) contrast(86%); /* secondary color */
+}
+
+.link-button:hover img,
+.copy-button:hover img {
+    filter: invert(29%) sepia(17%) saturate(1342%) hue-rotate(176deg) brightness(93%) contrast(88%); /* link color */
+}
+
+.delete-button {
+    background-color: transparent;
+}
+
+.delete-button img {
+  filter: invert(34%) sepia(98%) saturate(1691%) hue-rotate(336deg) brightness(93%) contrast(91%); /* accent color */
+}
+
+.delete-button:hover img {
+  filter: invert(52%) sepia(27%) saturate(2119%) hue-rotate(321deg) brightness(98%) contrast(91%); /* accent-hover color */
+}
+
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm); /* Space between elements */
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+#searchInput {
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  width: 50%;
+  margin-right: var(--space-sm);
+}
+
+.prompt-count-header {
+  font-size: 13px;
+  color: var(--color-link);
+  text-align: right;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+
+.header-actions .action-button img {
+  filter: invert(48%) sepia(6%) saturate(1461%) hue-rotate(176deg) brightness(93%) contrast(86%); /* secondary color */
+}
+
+.header-actions .action-button:hover img {
+  filter: invert(29%) sepia(17%) saturate(1342%) hue-rotate(176deg) brightness(93%) contrast(88%); /* link color */
+}
+
+#upgradeButton:hover img {
+  filter: invert(68%) sepia(39%) saturate(1359%) hue-rotate(102deg) brightness(91%) contrast(93%); /* success color */
+}
+
+#bugButton:hover img {
+  filter: invert(34%) sepia(98%) saturate(1691%) hue-rotate(336deg) brightness(93%) contrast(91%); /* accent color */
+}
+
+.upgrade-container {
+  text-align: right;
+}
