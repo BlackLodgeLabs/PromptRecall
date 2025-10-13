@@ -10,5 +10,3 @@
   - `storage`: used for saving prompts and syncing via `chrome.storage.sync`.
   - `notifications`: used in the background service worker to show install and other system notifications.
   - `contextMenus`: used to create a right-click "Save Prompt to Prompt Recall" menu for manual prompt capture.
-
-Please include this change note when re-submitting to the Chrome Web Store to explain why the permission was removed.

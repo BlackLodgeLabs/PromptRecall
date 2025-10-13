@@ -7,8 +7,7 @@
   "permissions": [   
     "storage",
     "notifications",
-    "contextMenus",
-    "scripting"
+    "contextMenus"
   ],
   "options_page": "options/options.html",
   "action": {
