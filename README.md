@@ -58,6 +58,19 @@ The easiest way to install Prompt Recall is via the Chrome Web Store:
 
 -----
 
+## Permissions and Why They're Needed
+
+This extension requests the minimum permissions required to implement its features. Below is a short explanation of each permission declared in `manifest.json` and why the extension needs it:
+
+- `storage` — Used to save users' prompts and settings (like enabled sites and toast notification preferences) via `chrome.storage.sync`. This enables cross-device synchronization of the prompt library. The extension reads and writes saved prompts in `popup`, `options`, `background`, and `content` scripts.
+
+- `notifications` — Used in the background service worker to display a one-time install notification and (optionally) other system notifications. The content script implements small in-page toast messages, but the `notifications` permission allows background-driven notifications if needed.
+
+- `contextMenus` — Used to add a right-click context menu item "Save Prompt to Prompt Recall" for quick manual saving of selected text on supported AI sites. The context menu is created in the background service worker and handled by `background/background.js`.
+
+Note: The `scripting` permission was removed because this extension does not call the `chrome.scripting` API. The extension injects no programmatic scripts from the background; content scripts are declared statically in the manifest and execute where configured. 
+
+
 ## Settings and Customization
 
 Access the Options page by right-clicking the extension icon in the toolbar and selecting **Options**.

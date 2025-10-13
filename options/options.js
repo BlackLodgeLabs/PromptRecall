@@ -55,8 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Load saved settings and update UI
-  chrome.storage.sync.get({ showToastNotifications: true, enabledSites: supportedSites }, (data) => {
+  chrome.storage.sync.get({ showToastNotifications: true, enabledSites: supportedSites, debugVerbose: false }, (data) => {
     toastToggle.checked = data.showToastNotifications;
+    const debugToggle = document.getElementById('debug-toggle');
+    debugToggle.checked = !!data.debugVerbose;
 
     console.log('options.js: supportedSites (hardcoded) =', supportedSites);
     console.log('options.js: data.enabledSites from storage (before check) =', data.enabledSites);
@@ -107,6 +109,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 1500);
     });
   });
+
+    // Save debug toggle
+    const debugToggleEl = document.getElementById('debug-toggle');
+    debugToggleEl.addEventListener('change', () => {
+      chrome.storage.sync.set({ debugVerbose: debugToggleEl.checked }, () => {
+        statusDiv.textContent = 'Options saved.';
+        setTimeout(() => { statusDiv.textContent = ''; }, 1500);
+      });
+    });
 
   // Save enabled sites setting
   siteListDiv.addEventListener('change', (e) => {
