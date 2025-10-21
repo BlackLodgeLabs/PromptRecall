@@ -1,10 +1,10 @@
 {
   "extName": {
-    "message": "Prompt Recall",
+    "message": "Prompt Recall: AI Prompt Manager",
     "description": "The name of the extension."
   },
   "extDesc": {
-    "message": "Save and manage your favorite AI prompts from any webpage. Build your personal prompt library with ease.",
+    "message": "Automatically save every AI prompt. Search & reuse your best ideas from ChatGPT, Claude & more.",
     "description": "The description of the extension."
   }
 }

@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearSearchButton = document.getElementById('clearSearchButton');
   const upgradeButton = document.getElementById('upgradeButton');
   const bugButton = document.getElementById('bugButton');
-  const upgradeLink = document.getElementById('upgradeLink');
 
   bugButton.addEventListener('click', (e) => {
     e.preventDefault();
@@ -14,11 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.open(url, '_blank');
   });
 
-  upgradeLink.addEventListener('click', (e) => {
-    e.preventDefault();
-  const url = (window.APP_CONFIG && window.APP_CONFIG.getLink) ? window.APP_CONFIG.getLink('upgradePage', 'https://promptrecall.blacklodgelabs.com/upgrade') : 'https://promptrecall.blacklodgelabs.com/upgrade';
-  window.open(url, '_blank');
-  });
 
   function formatTime(isoString) {
     return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -55,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const localPrompts = localRes.prompts_local || [];
         // Keep sync prompts first, then local fallbacks
         let prompts = syncPrompts.concat(localPrompts);
+        const promptCount = prompts.length;
         prompts.reverse();
 
         if (currentFilter) {
@@ -64,11 +59,27 @@ document.addEventListener('DOMContentLoaded', () => {
           );
         }
 
-        promptCounter.textContent = `saved ${prompts.length}/${PROMPT_LIMIT} prompts`;
-        if (prompts.length >= PROMPT_LIMIT) {
-          upgradeLink.style.display = 'block';
+        promptCounter.textContent = `saved ${promptCount}/${PROMPT_LIMIT} prompts`;
+
+        // Show/hide review and upgrade prompts
+        const reviewPrompt = document.getElementById('reviewPrompt');
+        const upgradePrompt = document.getElementById('upgradePrompt');
+        const reviewThreshold = Math.floor(PROMPT_LIMIT * 0.6);
+        // Guarded lookup for the inline upgrade prompt link (may not exist)
+        const upgradePromptLink = document.getElementById('upgradePromptLink');
+
+        if (promptCount >= PROMPT_LIMIT) {
+          upgradePrompt.style.display = 'block';
+          reviewPrompt.style.display = 'none';
+          if (upgradePromptLink) upgradePromptLink.style.display = 'inline';
+        } else if (promptCount >= reviewThreshold) {
+          reviewPrompt.style.display = 'block';
+          upgradePrompt.style.display = 'none';
+          if (upgradePromptLink) upgradePromptLink.style.display = 'none';
         } else {
-          upgradeLink.style.display = 'none';
+          reviewPrompt.style.display = 'none';
+          upgradePrompt.style.display = 'none';
+          if (upgradePromptLink) upgradePromptLink.style.display = 'none';
         }
 
         promptList.innerHTML = '';
@@ -150,7 +161,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const linkButton = document.createElement('button');
             linkButton.className = 'action-button link-button';
             linkButton.dataset.url = prompt.url || '';
-            linkButton.innerHTML = '<img src="../assets/icons/external-link.svg" alt="open url">';
+            const linkImg = document.createElement('img');
+            linkImg.src = '../assets/icons/external-link.svg';
+            linkImg.alt = 'open url';
+            linkButton.appendChild(linkImg);
             linkButton.title = 'open url';
             linkButton.addEventListener('click', (e) => {
               e.stopPropagation();
@@ -162,14 +176,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const copyButton = document.createElement('button');
             copyButton.className = 'action-button copy-button';
             copyButton.dataset.prompt = prompt.prompt || '';
-            copyButton.innerHTML = '<img src="../assets/icons/copy.svg" alt="copy prompt">';
+            const copyImg = document.createElement('img');
+            copyImg.src = '../assets/icons/copy.svg';
+            copyImg.alt = 'copy prompt';
+            copyButton.appendChild(copyImg);
             copyButton.title = 'copy prompt';
             copyButton.addEventListener('click', (e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(prompt.prompt || '').then(() => {
-                const originalText = copyButton.innerHTML;
-                copyButton.innerHTML = '&#10003;';
-                setTimeout(() => { copyButton.innerHTML = originalText; }, 1000);
+                const originalImg = copyButton.innerHTML;
+                copyButton.textContent = '✓';
+                setTimeout(() => { 
+                  copyButton.innerHTML = '';
+                  copyButton.appendChild(copyImg);
+                }, 1000);
               }).catch(err => { console.error('Failed to copy prompt: ', err); });
             });
             actionsCell.appendChild(copyButton);
@@ -178,7 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const deleteButton = document.createElement('button');
             deleteButton.className = 'action-button delete-button';
             deleteButton.dataset.id = prompt.id;
-            deleteButton.innerHTML = '<img src="../assets/icons/trash.svg" alt="delete prompt">';
+            const deleteImg = document.createElement('img');
+            deleteImg.src = '../assets/icons/trash.svg';
+            deleteImg.alt = 'delete prompt';
+            deleteButton.appendChild(deleteImg);
             deleteButton.title = 'delete prompt';
             actionsCell.appendChild(deleteButton);
 
@@ -220,9 +243,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const upgradePromptLink = document.getElementById('upgradePromptLink');
+  if (upgradePromptLink) {
+    upgradePromptLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const url = (window.APP_CONFIG && window.APP_CONFIG.getLink) ? window.APP_CONFIG.getLink('upgradePage', 'https://promptrecall.blacklodgelabs.com/upgrade') : 'https://promptrecall.blacklodgelabs.com/upgrade';
+      window.open(url, '_blank');
+    });
+  }
+
   upgradeButton.addEventListener('click', (e) => {
     e.preventDefault();
-  const url = (window.APP_CONFIG && window.APP_CONFIG.getLink) ? window.APP_CONFIG.getLink('upgradePage', 'https://promptrecall.blacklodgelabs.com/upgrade') : 'https://promptrecall.blacklodgelabs.com/upgrade';
+    const url = (window.APP_CONFIG && window.APP_CONFIG.getLink) ? window.APP_CONFIG.getLink('upgradePage', 'https://promptrecall.blacklodgelabs.com/upgrade') : 'https://promptrecall.blacklodgelabs.com/upgrade';
     window.open(url, '_blank');
   });
 

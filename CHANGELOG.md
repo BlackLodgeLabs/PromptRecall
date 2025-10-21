@@ -10,3 +10,27 @@
   - `storage`: used for saving prompts and syncing via `chrome.storage.sync`.
   - `notifications`: used in the background service worker to show install and other system notifications.
   - `contextMenus`: used to create a right-click "Save Prompt to Prompt Recall" menu for manual prompt capture.
+
+## [1.0.2] - 2025-10-21
+### Changed
+
+### Notes & Validation
+### Changed
+- popup: replace unsafe innerHTML with DOM-created <img> icons for action buttons (external-link, copy, trash) to improve safety and maintainability (`popup/popup.js`).
+- popup: update copy-button UX to show a temporary checkmark and restore the icon after a successful copy (`popup/popup.js`).
+- popup: remove unused `upgradeLink` reference and guard inline `upgradePromptLink` usage inside `renderPrompts` to prevent a `ReferenceError` when the element is missing (`popup/popup.js`).
+- popup: use a `promptCount` variable for clarity when computing counts and displaying `saved X/Y prompts` (`popup/popup.js`).
+- popup: tidy CSS and add `.info-prompt` styles; remove `.upgrade-container` and adjust `.search-container` layout (`popup/popup.css`).
+- locales: update English strings to improved marketing copy (`_locales/en/messages.json`).
+
+### Files changed
+- `popup/popup.html` — markup adjustments for review/upgrade prompts and prompt-count placement.
+- `popup/popup.js` — fixes and refactors: DOM creation for icons, prompt counting, guarded upgrade link handling, and copy UX improvements.
+- `popup/popup.css` — removed unused `.upgrade-container`, added `.info-prompt` styles and layout tweaks.
+- `_locales/en/messages.json` — updated extension name and description.
+
+### Notes & Validation
+- Behaviour preserved: header `upgradeButton` and inline `upgradePrompt` remain active upgrade entry points.
+- Performed a syntax/reference scan on modified files; no syntax or ReferenceError issues were found after the fixes.
+- These edits were in the working tree and are now committed (see commit below).
+

@@ -19,15 +19,19 @@
         <button id="bugButton" class="action-button" title="support"><img src="../assets/icons/help.svg" alt="support"></button>
         <button id="optionsButton" class="action-button" title="options"><img src="../assets/icons/cog.svg" alt="options"></button>
       </div>
-    </header>
+    </header>  
 
     <div class="search-container">
       <input type="text" id="searchInput" placeholder="search prompts..." aria-label="Search prompts">
       <button id="clearSearchButton" class="action-button" title="clear search" style="display: none;">&times;</button>
       <div id="promptCountHeader" class="prompt-count-header"></div>
+    </div>   
+
+    <div id="reviewPrompt" class="info-prompt" style="display: none;">
+      Enjoying Prompt Recall? A <a href="https://chromewebstore.google.com/detail/prompt-recall/kbafcigabmaekhfninnjcomjbifhllhm/reviews" target="_blank">review on the Chrome Web Store</a> would help us a lot!
     </div>
-    <div class="upgrade-container">
-      <a href="#" id="upgradeLink" class="upgrade-link" style="display: none;">upgrade for unlimited</a>
+    <div id="upgradePrompt" class="info-prompt" style="display: none;">
+      You're a power user! You've saved 25 prompts. To save unlimited prompts and unlock future features, <a href="#" id="upgradePromptLink">click upgrade</a> to be notified when our Pro plan is available.
     </div>
 
     <table class="prompt-table">

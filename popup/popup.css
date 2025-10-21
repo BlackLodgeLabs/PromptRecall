@@ -265,6 +265,7 @@ a:focus {
   display: flex;
   align-items: center;
   margin-bottom: var(--space-lg);
+  position: relative;
 }
 
 #searchInput {
@@ -300,6 +301,24 @@ a:focus {
   filter: invert(34%) sepia(98%) saturate(1691%) hue-rotate(336deg) brightness(93%) contrast(91%); /* accent color */
 }
 
-.upgrade-container {
-  text-align: right;
+
+
+.header-actions button:hover {
+  background-color: #f0f0f0;
+}
+
+.info-prompt {
+  padding: 8px 12px;
+  margin: 8px 0;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.info-prompt a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  font-weight: bold;
 }
