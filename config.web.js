@@ -1,13 +1,14 @@
-export const PROMPT_LIMIT = parseInt(atob('MjU='));
+// Non-module version of config for use in regular scripts
+const PROMPT_LIMIT = parseInt(atob('MjU='));
 
 // Centralized application configuration
-export const APP_CONFIG = {
+window.APP_CONFIG = {
   LINKS: {
     sponsor: 'https://github.com/sponsors/blacklodgelabs',
     bugReport: 'https://promptrecall.blacklodgelabs.com/support#bug-report',
     featureRequest: 'https://promptrecall.blacklodgelabs.com/support#feature-request',
     upgradePage: 'https://promptrecall.blacklodgelabs.com/upgrade',
-    licenseVerifier: 'https://license-verifier-1089677266067.europe-west2.run.app'
+    licenseVerifier: 'https://license-verifier-xxxxx.run.app'
   },
   
   // Helper to retrieve a link by key with an optional fallback

@@ -285,6 +285,21 @@ a:focus {
   flex-grow: 1;
 }
 
+.license-status {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: var(--space-sm);
+  background-color: var(--color-bg);
+  color: var(--color-text-secondary);
+}
+
+.license-status.pro {
+  background-color: var(--color-success);
+  color: white;
+}
+
 .header-actions .action-button img {
   filter: invert(48%) sepia(6%) saturate(1461%) hue-rotate(176deg) brightness(93%) contrast(86%); /* secondary color */
 }

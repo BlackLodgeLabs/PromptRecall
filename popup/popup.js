@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Check license status when popup opens
+  chrome.runtime.sendMessage({ action: 'checkLicense' });
   const promptList = document.getElementById('promptList');
   const promptCounter = document.getElementById('promptCountHeader'); // Updated ID
   const optionsButton = document.getElementById('optionsButton');
@@ -40,8 +42,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentFilter = ''; // To store the current filter text
 
-  function renderPrompts(filterText = '') {
+  async function renderPrompts(filterText = '') {
     currentFilter = filterText.toLowerCase(); // Store and normalize filter text
+
+    // Get license status
+    const { licenseStatus = {} } = await chrome.storage.local.get(['licenseStatus']);
+    const hasValidLicense = licenseStatus.valid === true;
+    const licenseStatusEl = document.getElementById('licenseStatus');
+    
+    if (hasValidLicense) {
+      licenseStatusEl.textContent = 'PRO';
+      licenseStatusEl.classList.add('pro');
+      // Hide upgrade button for licensed users
+      upgradeButton.style.display = 'none';
+    } else {
+      licenseStatusEl.textContent = 'FREE';
+      licenseStatusEl.classList.remove('pro');
+      upgradeButton.style.display = 'inline-block';
+    }
 
     chrome.storage.sync.get(['prompts'], (syncRes) => {
       chrome.storage.local.get(['prompts_local'], (localRes) => {
@@ -59,7 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
           );
         }
 
-        promptCounter.textContent = `saved ${promptCount}/${PROMPT_LIMIT} prompts`;
+        promptCounter.textContent = hasValidLicense ? 
+          `saved ${promptCount} prompts` : 
+          `saved ${promptCount}/${PROMPT_LIMIT} prompts`;
 
         // Show/hide review and upgrade prompts
         const reviewPrompt = document.getElementById('reviewPrompt');
@@ -68,18 +88,26 @@ document.addEventListener('DOMContentLoaded', () => {
         // Guarded lookup for the inline upgrade prompt link (may not exist)
         const upgradePromptLink = document.getElementById('upgradePromptLink');
 
-        if (promptCount >= PROMPT_LIMIT) {
-          upgradePrompt.style.display = 'block';
-          reviewPrompt.style.display = 'none';
-          if (upgradePromptLink) upgradePromptLink.style.display = 'inline';
-        } else if (promptCount >= reviewThreshold) {
-          reviewPrompt.style.display = 'block';
+        if (hasValidLicense) {
+          // Licensed users don't see upgrade or review prompts
           upgradePrompt.style.display = 'none';
+          reviewPrompt.style.display = 'none';
           if (upgradePromptLink) upgradePromptLink.style.display = 'none';
         } else {
-          reviewPrompt.style.display = 'none';
-          upgradePrompt.style.display = 'none';
-          if (upgradePromptLink) upgradePromptLink.style.display = 'none';
+          // Non-licensed users see upgrade prompts at limit
+          if (promptCount >= PROMPT_LIMIT) {
+            upgradePrompt.style.display = 'block';
+            reviewPrompt.style.display = 'none';
+            if (upgradePromptLink) upgradePromptLink.style.display = 'inline';
+          } else if (promptCount >= reviewThreshold) {
+            reviewPrompt.style.display = 'block';
+            upgradePrompt.style.display = 'none';
+            if (upgradePromptLink) upgradePromptLink.style.display = 'none';
+          } else {
+            reviewPrompt.style.display = 'none';
+            upgradePrompt.style.display = 'none';
+            if (upgradePromptLink) upgradePromptLink.style.display = 'none';
+          }
         }
 
         promptList.innerHTML = '';

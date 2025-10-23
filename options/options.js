@@ -1,7 +1,14 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const toastToggle = document.getElementById('toast-toggle');
   const statusDiv = document.getElementById('status');
   const siteListDiv = document.getElementById('site-list');
+
+  // Check license status first
+  const { licenseStatus = {} } = await chrome.storage.local.get(['licenseStatus']);
+  const hasValidLicense = licenseStatus.valid === true;
+
+  // Request a fresh license check
+  chrome.runtime.sendMessage({ action: 'checkLicense' });
   
   const deleteAllButton = document.getElementById('deleteAllButton');
   const promptCounter = document.getElementById('promptCounter');
@@ -50,7 +57,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const prompts = result.prompts || [];
       console.log('options.js: Prompts retrieved for counter:', prompts);
       console.log('options.js: Number of prompts:', prompts.length);
-      promptCounter.textContent = `${prompts.length} prompts saved`;
+      
+      // Hide upgrade elements if user has a valid license
+      if (hasValidLicense) {
+        upgradeButtonOptions.style.display = 'none';
+        upgradeLinkOptions.style.display = 'none';
+        promptCounter.textContent = `${prompts.length} prompts saved`;
+      } else {
+        upgradeButtonOptions.style.display = 'inline-block';
+        upgradeLinkOptions.style.display = 'inline';
+        promptCounter.textContent = `${prompts.length} prompts saved`;
+      }
     });
   }
 
