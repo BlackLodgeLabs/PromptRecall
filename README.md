@@ -18,6 +18,11 @@ The extension unobtrusively monitors your activity on supported AI platforms and
   * **Cross-Device Sync:** Prompts are stored using `chrome.storage.sync`, meaning your entire library automatically syncs across all your devices where you are logged into Chrome.
   * **Site Control:** Customize capture settings to enable or disable automatic saving for specific AI sites.
 
+### Pro Features
+
+  * **Unlimited Prompts:** Remove the 25-prompt storage limit and save as many prompts as you need.
+  * **More features coming soon!**
+
 -----
 
 ## Supported Platforms
@@ -41,9 +46,19 @@ Prompt Recall is actively designed to monitor user input on the following websit
 
 The easiest way to install Prompt Recall is via the Chrome Web Store:
 
-1.  [Link to Chrome Web Store Listing] (Coming Soon\!)
+1.  [Link to Chrome Web Store Listing] (Coming Soon!)
 2.  Click **"Add to Chrome."**
 3.  Pin the extension icon ($\mathbf{\mathbf{\text{Puzzle Piece Icon}}}$) to your toolbar for easy access.
+
+### Pro Version Activation
+
+To upgrade to Pro and unlock unlimited storage:
+
+1. Click the extension icon in your toolbar
+2. Click the "Upgrade to Pro" button in the popup
+3. Complete the one-time payment process
+4. Your Pro features will activate automatically
+5. Your license is linked to your Google account and syncs across devices
 
 ### Local Development / Unpacked Build
 
@@ -68,7 +83,23 @@ This extension requests the minimum permissions required to implement its featur
 
 - `contextMenus` — Used to add a right-click context menu item "Save Prompt to Prompt Recall" for quick manual saving of selected text on supported AI sites. The context menu is created in the background service worker and handled by `background/background.js`.
 
+- `identity` and `identity.email` — Used to verify pro licenses by accessing the user's primary Google account email. This is only used for license verification and the email is never stored or used for any other purpose.
+
 Note: The `scripting` permission was removed because this extension does not call the `chrome.scripting` API. The extension injects no programmatic scripts from the background; content scripts are declared statically in the manifest and execute where configured. 
+
+### License Verification
+
+The extension performs a lightweight license verification check when:
+1. The extension is first installed
+2. The user completes a Pro purchase
+3. Every 24 hours for Pro users (to maintain Pro features)
+4. When manually triggered via the "Verify License" button in settings
+
+The verification process:
+- Uses your primary Google account email (with your permission)
+- Performs a secure check against our license server
+- Never stores your email - only a temporary verification token
+- Automatically syncs your Pro status across devices
 
 
 ## Settings and Customization
@@ -86,9 +117,19 @@ Access the Options page by right-clicking the extension icon in the toolbar and 
 
 ## Roadmap & Limitations
 
-### Current Limitation (Free Version)
+### Plans and Features
 
-  * **Prompt Storage Limit:** The free version is capped at **25 saved prompts**. Users will be prompted to upgrade once this limit is reached.
+#### Free Version
+  * **Prompt Storage Limit:** The free version is capped at **25 saved prompts**
+  * **Basic Features:** Includes automatic capture, search, and cross-device sync
+  * Users will be prompted to upgrade once the storage limit is reached
+
+#### Pro Version
+  * **Unlimited Storage:** Save as many prompts as you need
+  * **All Free Features:** Includes all features from the free version
+  * **Priority Support:** Direct access to our support team
+  * **Early Access:** Be the first to try new features
+  * **More Coming Soon:** Additional pro features in development
 
 ### Technical Notes
 
