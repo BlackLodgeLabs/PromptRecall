@@ -1,5 +1,5 @@
 // Import extension config into the service worker using an absolute extension URL
-importScripts(chrome.runtime.getURL('config.js'));
+importScripts(chrome.runtime.getURL('config.js'), '../utils/lz-string.js');
 
 // Create context menu on extension install
 chrome.runtime.onInstalled.addListener(() => {
@@ -113,7 +113,7 @@ function savePrompt(promptData, sendResponse, tab) {
       }
 
       // duplicate check
-      const existingPrompt = prompts.find(p => p.prompt === promptData.prompt && p.site === promptData.site);
+      const existingPrompt = prompts.find(p => ((LZString.decompressFromUTF16(p.prompt) || p.prompt) === promptData.prompt) && p.site === promptData.site);
       if (existingPrompt) {
         dbgBg("Prompt for this site already exists. Ignoring.");
         if (sendResponse) {
@@ -134,6 +134,7 @@ function savePrompt(promptData, sendResponse, tab) {
         return;
       }
 
+      promptData.prompt = LZString.compressToUTF16(promptData.prompt);
       prompts.push(promptData);
       chrome.storage.sync.set({ prompts }, () => {
         if (chrome.runtime.lastError) {

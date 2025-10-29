@@ -52,6 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const promptCount = prompts.length;
         prompts.reverse();
 
+        // Decompress prompts
+        prompts.forEach(prompt => {
+          if (prompt.prompt) {
+            const decompressed = LZString.decompressFromUTF16(prompt.prompt);
+            // If decompression returns null (for old, uncompressed data), use the original string.
+            prompt.prompt = (decompressed === null) ? prompt.prompt : decompressed;
+          }
+        });
+
         if (currentFilter) {
           prompts = prompts.filter(prompt =>
             prompt.prompt.toLowerCase().includes(currentFilter) ||

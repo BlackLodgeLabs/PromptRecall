@@ -26,6 +26,13 @@
 - popup: fixed tick mark display issues
 - locales: update English strings to improved marketing copy (`_locales/en/messages.json`).
 
+## 2025-10-29
+### Changed
+- Implemented prompt compression using `lz-string` library. Prompts are now compressed before being saved to `chrome.storage.sync` and decompressed when read. This allows for significantly larger prompts to be stored, overcoming the previous size limitations.
+- Updated `background.js` to include compression and decompression logic.
+- Added `utils/lz-string.js` to the project and ensured it is correctly imported in the service worker.
+
+
 
 ### Files changed
 - `popup/popup.html` — markup adjustments for review/upgrade prompts and prompt-count placement. Added standard <meta charset="UTF-8"> declaration as best practice to prevent further character display issues. 
