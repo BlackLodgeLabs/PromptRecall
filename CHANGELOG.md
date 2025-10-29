@@ -1,6 +1,7 @@
 # Changelog
 
-## [1.0.1] - 2025-10-13
+## [1.0.1] 
+## 2025-10-13
 ### Changed
 - Removed unused `scripting` permission from `manifest.json` after auditing the codebase.
 
@@ -11,7 +12,8 @@
   - `notifications`: used in the background service worker to show install and other system notifications.
   - `contextMenus`: used to create a right-click "Save Prompt to Prompt Recall" menu for manual prompt capture.
 
-## [1.0.2] - 2025-10-21
+## [1.0.2] 
+## 2025-10-21
 ### Changed
 
 ### Notes & Validation
@@ -21,10 +23,12 @@
 - popup: remove unused `upgradeLink` reference and guard inline `upgradePromptLink` usage inside `renderPrompts` to prevent a `ReferenceError` when the element is missing (`popup/popup.js`).
 - popup: use a `promptCount` variable for clarity when computing counts and displaying `saved X/Y prompts` (`popup/popup.js`).
 - popup: tidy CSS and add `.info-prompt` styles; remove `.upgrade-container` and adjust `.search-container` layout (`popup/popup.css`).
+- popup: fixed tick mark display issues
 - locales: update English strings to improved marketing copy (`_locales/en/messages.json`).
 
+
 ### Files changed
-- `popup/popup.html` — markup adjustments for review/upgrade prompts and prompt-count placement.
+- `popup/popup.html` — markup adjustments for review/upgrade prompts and prompt-count placement. Added standard <meta charset="UTF-8"> declaration as best practice to prevent further character display issues. 
 - `popup/popup.js` — fixes and refactors: DOM creation for icons, prompt counting, guarded upgrade link handling, and copy UX improvements.
 - `popup/popup.css` — removed unused `.upgrade-container`, added `.info-prompt` styles and layout tweaks.
 - `_locales/en/messages.json` — updated extension name and description.

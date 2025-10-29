@@ -184,11 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
             copyButton.addEventListener('click', (e) => {
               e.stopPropagation();
               navigator.clipboard.writeText(prompt.prompt || '').then(() => {
-                const originalImg = copyButton.innerHTML;
-                copyButton.textContent = '✓';
-                setTimeout(() => { 
-                  copyButton.innerHTML = '';
-                  copyButton.appendChild(copyImg);
+                const originalSrc = copyImg.src;
+                copyImg.src = '../assets/icons/check.svg';
+                copyButton.title = 'copied!';
+                setTimeout(() => {
+                  copyImg.src = originalSrc;
+                  copyButton.title = 'copy prompt';
                 }, 1000);
               }).catch(err => { console.error('Failed to copy prompt: ', err); });
             });
