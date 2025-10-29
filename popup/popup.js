@@ -55,9 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Decompress prompts
         prompts.forEach(prompt => {
           if (prompt.prompt) {
-            const decompressed = LZString.decompressFromUTF16(prompt.prompt);
-            // If decompression returns null (for old, uncompressed data), use the original string.
-            prompt.prompt = (decompressed === null) ? prompt.prompt : decompressed;
+            try {
+              const decompressed = LZString.decompressFromUTF16(prompt.prompt);
+              // If decompression returns null (for old, uncompressed data), use the original string.
+              prompt.prompt = (decompressed === null) ? prompt.prompt : decompressed;
+            } catch (e) {
+              console.warn('Could not decompress prompt, showing raw data. Error:', e);
+              // If decompression fails, we'll just show the raw (likely compressed) data.
+            }
           }
         });
 

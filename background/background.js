@@ -113,7 +113,16 @@ function savePrompt(promptData, sendResponse, tab) {
       }
 
       // duplicate check
-      const existingPrompt = prompts.find(p => ((LZString.decompressFromUTF16(p.prompt) || p.prompt) === promptData.prompt) && p.site === promptData.site);
+      const existingPrompt = prompts.find(p => {
+        let decompressedPrompt = p.prompt;
+        try {
+          decompressedPrompt = LZString.decompressFromUTF16(p.prompt) || p.prompt;
+        } catch (e) {
+          console.warn('Error decompressing prompt for duplicate check:', e);
+        }
+        return decompressedPrompt === promptData.prompt && p.site === promptData.site;
+      });
+
       if (existingPrompt) {
         dbgBg("Prompt for this site already exists. Ignoring.");
         if (sendResponse) {
@@ -134,7 +143,14 @@ function savePrompt(promptData, sendResponse, tab) {
         return;
       }
 
-      promptData.prompt = LZString.compressToUTF16(promptData.prompt);
+      try {
+        const compressedPrompt = LZString.compressToUTF16(promptData.prompt);
+        promptData.prompt = compressedPrompt;
+      } catch (e) {
+        console.warn('Could not compress prompt, saving uncompressed. Error:', e);
+        // If compression fails, we'll just try to save it uncompressed.
+      }
+
       prompts.push(promptData);
       chrome.storage.sync.set({ prompts }, () => {
         if (chrome.runtime.lastError) {
