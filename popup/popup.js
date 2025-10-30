@@ -43,217 +43,209 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderPrompts(filterText = '') {
     currentFilter = filterText.toLowerCase(); // Store and normalize filter text
 
-    chrome.storage.sync.get(['prompts'], (syncRes) => {
-      chrome.storage.local.get(['prompts_local'], (localRes) => {
-        const syncPrompts = syncRes.prompts || [];
-        const localPrompts = localRes.prompts_local || [];
-        // Keep sync prompts first, then local fallbacks
-        let prompts = syncPrompts.concat(localPrompts);
-        const promptCount = prompts.length;
-        prompts.reverse();
+    chrome.storage.sync.get(null, (items) => {
+      let prompts = Object.keys(items)
+        .filter(key => key.startsWith('prompt_'))
+        .map(key => items[key]);
 
-        // Decompress prompts
-        prompts.forEach(prompt => {
-          if (prompt.prompt) {
-            try {
-              const decompressed = LZString.decompressFromUTF16(prompt.prompt);
-              // If decompression returns null (for old, uncompressed data), use the original string.
-              prompt.prompt = (decompressed === null) ? prompt.prompt : decompressed;
-            } catch (e) {
-              console.warn('Could not decompress prompt, showing raw data. Error:', e);
-              // If decompression fails, we'll just show the raw (likely compressed) data.
-            }
+      const promptCount = prompts.length;
+      prompts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Sort by newest first
+
+      // Decompress prompts
+      prompts.forEach(prompt => {
+        if (prompt.prompt) {
+          try {
+            const decompressed = LZString.decompressFromUTF16(prompt.prompt);
+            prompt.prompt = (decompressed === null) ? prompt.prompt : decompressed;
+          } catch (e) {
+            console.warn('Could not decompress prompt, showing raw data. Error:', e);
           }
-        });
-
-        if (currentFilter) {
-          prompts = prompts.filter(prompt =>
-            prompt.prompt.toLowerCase().includes(currentFilter) ||
-            (prompt.site && prompt.site.toLowerCase().includes(currentFilter))
-          );
-        }
-
-        promptCounter.textContent = `saved ${promptCount}/${PROMPT_LIMIT} prompts`;
-
-        // Show/hide review and upgrade prompts
-        const reviewPrompt = document.getElementById('reviewPrompt');
-        const upgradePrompt = document.getElementById('upgradePrompt');
-        const reviewThreshold = Math.floor(PROMPT_LIMIT * 0.6);
-        // Guarded lookup for the inline upgrade prompt link (may not exist)
-        const upgradePromptLink = document.getElementById('upgradePromptLink');
-
-        if (promptCount >= PROMPT_LIMIT) {
-          upgradePrompt.style.display = 'block';
-          reviewPrompt.style.display = 'none';
-          if (upgradePromptLink) upgradePromptLink.style.display = 'inline';
-        } else if (promptCount >= reviewThreshold) {
-          reviewPrompt.style.display = 'block';
-          upgradePrompt.style.display = 'none';
-          if (upgradePromptLink) upgradePromptLink.style.display = 'none';
-        } else {
-          reviewPrompt.style.display = 'none';
-          upgradePrompt.style.display = 'none';
-          if (upgradePromptLink) upgradePromptLink.style.display = 'none';
-        }
-
-        promptList.innerHTML = '';
-
-        if (prompts.length === 0) {
-          const row = document.createElement('tr');
-          const cell = document.createElement('td');
-          cell.colSpan = 4;
-          cell.textContent = 'no prompts saved yet.';
-          row.appendChild(cell);
-          promptList.appendChild(row);
-          return;
-        }
-
-        const groupedPrompts = prompts.reduce((groups, prompt) => {
-          const date = new Date(prompt.timestamp).toDateString();
-          if (!groups[date]) groups[date] = [];
-          groups[date].push(prompt);
-          return groups;
-        }, {});
-
-        for (const dateStr in groupedPrompts) {
-          const date = new Date(dateStr);
-          const headerRow = document.createElement('tr');
-          const headerCell = document.createElement('th');
-          headerCell.colSpan = 3;
-          headerCell.textContent = formatDate(date);
-
-          const deleteAllCell = document.createElement('th');
-          deleteAllCell.className = 'delete-all-header';
-          const deleteAllButton = document.createElement('button');
-          deleteAllButton.className = 'delete-all-button';
-          deleteAllButton.dataset.date = dateStr;
-          deleteAllButton.textContent = 'delete all';
-          deleteAllCell.appendChild(deleteAllButton);
-
-          headerRow.appendChild(headerCell);
-          headerRow.appendChild(deleteAllCell);
-          promptList.appendChild(headerRow);
-
-          groupedPrompts[dateStr].forEach((prompt) => {
-            const row = document.createElement('tr');
-            row.className = 'prompt-item';
-
-            const timeCell = document.createElement('td');
-            timeCell.textContent = formatTime(prompt.timestamp);
-
-            const siteCell = document.createElement('td');
-            siteCell.textContent = cleanSite(prompt.site || '');
-
-            const promptCell = document.createElement('td');
-            const promptText = prompt.prompt || '';
-            if (promptText.length > 50) {
-              const truncatedText = document.createElement('span');
-              truncatedText.textContent = `${promptText.substring(0, 50)}... `;
-              const fullText = document.createElement('span');
-              fullText.textContent = promptText;
-              fullText.style.display = 'none';
-              const readMore = document.createElement('a');
-              readMore.textContent = 'read more';
-              readMore.href = '#';
-              readMore.addEventListener('click', (e) => {
-                e.preventDefault();
-                truncatedText.style.display = 'none';
-                fullText.style.display = 'inline';
-                readMore.style.display = 'none';
-              });
-              promptCell.appendChild(truncatedText);
-              promptCell.appendChild(fullText);
-              promptCell.appendChild(readMore);
-            } else {
-              promptCell.textContent = promptText;
-            }
-
-            const actionsCell = document.createElement('td');
-            actionsCell.className = 'prompt-actions';
-
-            // LINK button
-            const linkButton = document.createElement('button');
-            linkButton.className = 'action-button link-button';
-            linkButton.dataset.url = prompt.url || '';
-            const linkImg = document.createElement('img');
-            linkImg.src = '../assets/icons/external-link.svg';
-            linkImg.alt = 'open url';
-            linkButton.appendChild(linkImg);
-            linkButton.title = 'open url';
-            linkButton.addEventListener('click', (e) => {
-              e.stopPropagation();
-              if (prompt.url) window.open(prompt.url, '_blank');
-            });
-            actionsCell.appendChild(linkButton);
-
-            // COPY button
-            const copyButton = document.createElement('button');
-            copyButton.className = 'action-button copy-button';
-            copyButton.dataset.prompt = prompt.prompt || '';
-            const copyImg = document.createElement('img');
-            copyImg.src = '../assets/icons/copy.svg';
-            copyImg.alt = 'copy prompt';
-            copyButton.appendChild(copyImg);
-            copyButton.title = 'copy prompt';
-            copyButton.addEventListener('click', (e) => {
-              e.stopPropagation();
-              navigator.clipboard.writeText(prompt.prompt || '').then(() => {
-                const originalSrc = copyImg.src;
-                copyImg.src = '../assets/icons/check.svg';
-                copyButton.title = 'copied!';
-                setTimeout(() => {
-                  copyImg.src = originalSrc;
-                  copyButton.title = 'copy prompt';
-                }, 1000);
-              }).catch(err => { console.error('Failed to copy prompt: ', err); });
-            });
-            actionsCell.appendChild(copyButton);
-
-            // DELETE button
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'action-button delete-button';
-            deleteButton.dataset.id = prompt.id;
-            const deleteImg = document.createElement('img');
-            deleteImg.src = '../assets/icons/trash.svg';
-            deleteImg.alt = 'delete prompt';
-            deleteButton.appendChild(deleteImg);
-            deleteButton.title = 'delete prompt';
-            actionsCell.appendChild(deleteButton);
-
-            row.appendChild(timeCell);
-            row.appendChild(siteCell);
-            row.appendChild(promptCell);
-            row.appendChild(actionsCell);
-            promptList.appendChild(row);
-          });
         }
       });
+
+      if (currentFilter) {
+        prompts = prompts.filter(prompt =>
+          (prompt.prompt && prompt.prompt.toLowerCase().includes(currentFilter)) ||
+          (prompt.site && prompt.site.toLowerCase().includes(currentFilter))
+        );
+      }
+
+      promptCounter.textContent = `saved ${promptCount}/${PROMPT_LIMIT} prompts`;
+
+      // Show/hide review and upgrade prompts
+      const reviewPrompt = document.getElementById('reviewPrompt');
+      const upgradePrompt = document.getElementById('upgradePrompt');
+      const reviewThreshold = Math.floor(PROMPT_LIMIT * 0.6);
+      const upgradePromptLink = document.getElementById('upgradePromptLink');
+
+      if (promptCount >= PROMPT_LIMIT) {
+        upgradePrompt.style.display = 'block';
+        reviewPrompt.style.display = 'none';
+        if (upgradePromptLink) upgradePromptLink.style.display = 'inline';
+      } else if (promptCount >= reviewThreshold) {
+        reviewPrompt.style.display = 'block';
+        upgradePrompt.style.display = 'none';
+        if (upgradePromptLink) upgradePromptLink.style.display = 'none';
+      } else {
+        reviewPrompt.style.display = 'none';
+        upgradePrompt.style.display = 'none';
+        if (upgradePromptLink) upgradePromptLink.style.display = 'none';
+      }
+
+      promptList.innerHTML = '';
+
+      if (prompts.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 4;
+        cell.textContent = 'no prompts saved yet.';
+        row.appendChild(cell);
+        promptList.appendChild(row);
+        return;
+      }
+
+      const groupedPrompts = prompts.reduce((groups, prompt) => {
+        const date = new Date(prompt.timestamp).toDateString();
+        if (!groups[date]) groups[date] = [];
+        groups[date].push(prompt);
+        return groups;
+      }, {});
+
+      for (const dateStr in groupedPrompts) {
+        const date = new Date(dateStr);
+        const headerRow = document.createElement('tr');
+        const headerCell = document.createElement('th');
+        headerCell.colSpan = 3;
+        headerCell.textContent = formatDate(date);
+
+        const deleteAllCell = document.createElement('th');
+        deleteAllCell.className = 'delete-all-header';
+        const deleteAllButton = document.createElement('button');
+        deleteAllButton.className = 'delete-all-button';
+        deleteAllButton.dataset.date = dateStr;
+        deleteAllButton.textContent = 'delete all';
+        deleteAllCell.appendChild(deleteAllButton);
+
+        headerRow.appendChild(headerCell);
+        headerRow.appendChild(deleteAllCell);
+        promptList.appendChild(headerRow);
+
+        groupedPrompts[dateStr].forEach((prompt) => {
+          const row = document.createElement('tr');
+          row.className = 'prompt-item';
+
+          const timeCell = document.createElement('td');
+          timeCell.textContent = formatTime(prompt.timestamp);
+
+          const siteCell = document.createElement('td');
+          siteCell.textContent = cleanSite(prompt.site || '');
+
+          const promptCell = document.createElement('td');
+          const promptText = prompt.prompt || '';
+          if (promptText.length > 50) {
+            const truncatedText = document.createElement('span');
+            truncatedText.textContent = `${promptText.substring(0, 50)}... `;
+            const fullText = document.createElement('span');
+            fullText.textContent = promptText;
+            fullText.style.display = 'none';
+            const readMore = document.createElement('a');
+            readMore.textContent = 'read more';
+            readMore.href = '#';
+            readMore.addEventListener('click', (e) => {
+              e.preventDefault();
+              truncatedText.style.display = 'none';
+              fullText.style.display = 'inline';
+              readMore.style.display = 'none';
+            });
+            promptCell.appendChild(truncatedText);
+            promptCell.appendChild(fullText);
+            promptCell.appendChild(readMore);
+          } else {
+            promptCell.textContent = promptText;
+          }
+
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'prompt-actions';
+
+          // LINK button
+          const linkButton = document.createElement('button');
+          linkButton.className = 'action-button link-button';
+          linkButton.dataset.url = prompt.url || '';
+          const linkImg = document.createElement('img');
+          linkImg.src = '../assets/icons/external-link.svg';
+          linkImg.alt = 'open url';
+          linkButton.appendChild(linkImg);
+          linkButton.title = 'open url';
+          linkButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (prompt.url) window.open(prompt.url, '_blank');
+          });
+          actionsCell.appendChild(linkButton);
+
+          // COPY button
+          const copyButton = document.createElement('button');
+          copyButton.className = 'action-button copy-button';
+          copyButton.dataset.prompt = prompt.prompt || '';
+          const copyImg = document.createElement('img');
+          copyImg.src = '../assets/icons/copy.svg';
+          copyImg.alt = 'copy prompt';
+          copyButton.appendChild(copyImg);
+          copyButton.title = 'copy prompt';
+          copyButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigator.clipboard.writeText(prompt.prompt || '').then(() => {
+              const originalSrc = copyImg.src;
+              copyImg.src = '../assets/icons/check.svg';
+              copyButton.title = 'copied!';
+              setTimeout(() => {
+                copyImg.src = originalSrc;
+                copyButton.title = 'copy prompt';
+              }, 1000);
+            }).catch(err => { console.error('Failed to copy prompt: ', err); });
+          });
+          actionsCell.appendChild(copyButton);
+
+          // DELETE button
+          const deleteButton = document.createElement('button');
+          deleteButton.className = 'action-button delete-button';
+          deleteButton.dataset.id = prompt.id;
+          const deleteImg = document.createElement('img');
+          deleteImg.src = '../assets/icons/trash.svg';
+          deleteImg.alt = 'delete prompt';
+          deleteButton.appendChild(deleteImg);
+          deleteButton.title = 'delete prompt';
+          actionsCell.appendChild(deleteButton);
+
+          row.appendChild(timeCell);
+          row.appendChild(siteCell);
+          row.appendChild(promptCell);
+          row.appendChild(actionsCell);
+          promptList.appendChild(row);
+        });
+      }
     });
   }
 
   promptList.addEventListener('click', (e) => {
     const deleteButton = e.target.closest('.delete-button');
-    console.log('Clicked target:', e.target);
-    console.log('Found delete button:', deleteButton);
     if (deleteButton) {
-      const promptId = parseInt(deleteButton.dataset.id, 10);
-      console.log('Prompt ID to delete:', promptId);
-      chrome.storage.sync.get(['prompts'], (result) => {
-        const updatedPrompts = result.prompts.filter((p) => p.id !== promptId);
-        console.log('Updated prompts after filter:', updatedPrompts);
-        chrome.storage.sync.set({ prompts: updatedPrompts }, () => {
-          renderPrompts(currentFilter); // Re-render with current filter after deletion
-        });
+      const promptId = deleteButton.dataset.id;
+      const keyToDelete = `prompt_${promptId}`;
+      chrome.storage.sync.remove(keyToDelete, () => {
+        renderPrompts(currentFilter);
       });
     } else if (e.target.classList.contains('delete-all-button')) {
       const dateStr = e.target.dataset.date;
-      chrome.storage.sync.get(['prompts'], (result) => {
-        const updatedPrompts = result.prompts.filter(
-          (p) => new Date(p.timestamp).toDateString() !== dateStr
-        );
-        chrome.storage.sync.set({ prompts: updatedPrompts }, () => {
-          renderPrompts(currentFilter); // Re-render with current filter after deletion
+      chrome.storage.sync.get(null, (items) => {
+        const keysToDelete = Object.keys(items).filter(key => {
+          const item = items[key];
+          return key.startsWith('prompt_') && new Date(item.timestamp).toDateString() === dateStr;
         });
+        if (keysToDelete.length > 0) {
+          chrome.storage.sync.remove(keysToDelete, () => {
+            renderPrompts(currentFilter);
+          });
+        }
       });
     }
   });
