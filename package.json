@@ -1,0 +1,14 @@
+{
+  "name": "prompt-recall",
+  "version": "1.0.0",
+  "description": "Prompt Recall - extension packaging helper",
+  "private": true,
+  "scripts": {
+    "build:release": "node build-release.js --out=prompt-recall-release.zip"
+  },
+  "devDependencies": {
+    "archiver": "^5.3.1",
+    "fs-extra": "^11.1.1",
+    "minimist": "^1.2.8"
+  }
+}

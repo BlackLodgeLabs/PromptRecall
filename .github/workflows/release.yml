@@ -1,0 +1,47 @@
+name: Build Release ZIP
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build release zip
+        run: |
+          TAG_NAME=${{ github.ref_name }}
+          OUT="prompt-recall-${TAG_NAME:-release}.zip"
+          if [ -n "${TAG_NAME}" ]; then
+            node build-release.js --out=${OUT} --version=${TAG_NAME}
+          else
+            node build-release.js --out=${OUT}
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prompt-recall-release
+          path: prompt-recall-*.zip
+
+      - name: Create GitHub Release and attach artifact
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: prompt-recall-*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
