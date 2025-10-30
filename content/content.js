@@ -370,7 +370,17 @@ async function setupMutationObserver() {
   }
 
   // Fetch enabled sites from storage
-  const storageData = await chrome.storage.sync.get({ enabledSites: Object.keys(siteConfigs) });
+  // chrome.storage.* is callback-based in many environments; wrap in a Promise
+  const storageData = await new Promise((resolve) => {
+    try {
+      chrome.storage.sync.get({ enabledSites: Object.keys(siteConfigs) }, (data) => {
+        resolve(data || {});
+      });
+    } catch (e) {
+      // In case chrome.storage.sync.get throws synchronously (rare), resolve to defaults
+      resolve({ enabledSites: Object.keys(siteConfigs) });
+    }
+  });
   const enabledSites = storageData.enabledSites;
 
   // Check if current site is enabled and a configuration exists

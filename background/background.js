@@ -1,5 +1,6 @@
-// Import extension config into the service worker using an absolute extension URL
-importScripts(chrome.runtime.getURL('config.js'), '../utils/lz-string.js');
+// Import extension config into the service worker using absolute extension URLs
+// Use chrome.runtime.getURL for all imports to ensure correct resolution in the service worker
+importScripts(chrome.runtime.getURL('config.js'), chrome.runtime.getURL('utils/lz-string.js'));
 
 // Create context menu on extension install
 chrome.runtime.onInstalled.addListener(() => {
