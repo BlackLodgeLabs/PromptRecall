@@ -32,8 +32,6 @@
 - Updated `background.js` to include compression and decompression logic.
 - Added `utils/lz-string.js` to the project and ensured it is correctly imported in the service worker.
 
-
-
 ### Files changed
 - `popup/popup.html` — markup adjustments for review/upgrade prompts and prompt-count placement. Added standard <meta charset="UTF-8"> declaration as best practice to prevent further character display issues. 
 - `popup/popup.js` — fixes and refactors: DOM creation for icons, prompt counting, guarded upgrade link handling, and copy UX improvements.

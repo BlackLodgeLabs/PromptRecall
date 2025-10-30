@@ -112,16 +112,20 @@ function savePrompt(promptData, sendResponse, tab) {
         console.warn('background: error normalizing prompt url/site', e);
       }
 
-      // duplicate check
-      const existingPrompt = prompts.find(p => {
-        let decompressedPrompt = p.prompt;
-        try {
-          decompressedPrompt = LZString.decompressFromUTF16(p.prompt) || p.prompt;
-        } catch (e) {
-          console.warn('Error decompressing prompt for duplicate check:', e);
+      // Compress the prompt before doing anything else
+      let compressedPrompt;
+      try {
+        compressedPrompt = LZString.compressToUTF16(promptData.prompt);
+      } catch (e) {
+        console.error('Fatal: Could not compress prompt, aborting save. Error:', e);
+        if (sendResponse) {
+          sendResponse({ status: 'error', message: 'Could not compress prompt.' });
         }
-        return decompressedPrompt === promptData.prompt && p.site === promptData.site;
-      });
+        return; // Abort if compression fails
+      }
+
+      // Duplicate check against compressed prompts
+      const existingPrompt = prompts.find(p => p.prompt === compressedPrompt && p.site === promptData.site);
 
       if (existingPrompt) {
         dbgBg("Prompt for this site already exists. Ignoring.");
@@ -143,13 +147,8 @@ function savePrompt(promptData, sendResponse, tab) {
         return;
       }
 
-      try {
-        const compressedPrompt = LZString.compressToUTF16(promptData.prompt);
-        promptData.prompt = compressedPrompt;
-      } catch (e) {
-        console.warn('Could not compress prompt, saving uncompressed. Error:', e);
-        // If compression fails, we'll just try to save it uncompressed.
-      }
+      // The prompt is already compressed, so just update the data object
+      promptData.prompt = compressedPrompt;
 
       prompts.push(promptData);
       chrome.storage.sync.set({ prompts }, () => {
