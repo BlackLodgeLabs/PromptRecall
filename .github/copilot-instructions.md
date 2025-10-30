@@ -44,9 +44,13 @@ Here are the strict rules you MUST follow when providing code and explanations:
 
 8.  **Testing and Debugging Tips:** When providing complex code, include brief suggestions on how to test or debug the feature effectively.
 
-9.  **Don't use Replace functions when updating code:** read in the existing file and then write back with the updated content.
-
-
+9.  **When using replace functions to update code files**  
+    * Avoid partial replacements that may corrupt the file
+    * Ensure that the entire structure of the file remains intact after the update
+    * Use precise matching patterns to avoid unintended changes
+    * Don't confuse newContent and new_string parameters
+    * Validate the updated file to ensure no syntax errors have been introduced
+   
 ## Additional Guidelines
 
 * When suggesting code snippets, always ensure they are complete and ready to use within the context of a Chrome Extension.
