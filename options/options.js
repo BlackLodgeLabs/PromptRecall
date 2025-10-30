@@ -46,13 +46,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Function to update prompt counter
   function updatePromptCounter() {
-    chrome.storage.sync.get(['prompts'], (result) => {
-      const prompts = result.prompts || [];
-      console.log('options.js: Prompts retrieved for counter:', prompts);
-      console.log('options.js: Number of prompts:', prompts.length);
-      promptCounter.textContent = `${prompts.length} prompts saved`;
+    chrome.storage.sync.get(null, (items) => {
+      const promptKeys = Object.keys(items).filter(key => key.startsWith('prompt_'));
+      promptCounter.textContent = `${promptKeys.length} prompts saved`;
     });
   }
+
+  // ... (other code) ...
+
+
 
   // Load saved settings and update UI
   chrome.storage.sync.get({ showToastNotifications: true, enabledSites: supportedSites, debugVerbose: false }, (data) => {
@@ -149,22 +151,41 @@ document.addEventListener('DOMContentLoaded', () => {
     window.open(url, '_blank');
   });
 
-  deleteAllButton.addEventListener('click', () => {
-    chrome.storage.sync.get(['prompts'], (result) => {
-      const prompts = result.prompts || [];
-      if (prompts.length === 0) {
+  let isDeleting = false;
+  deleteAllButton.addEventListener('click', (e) => {
+    e.stopImmediatePropagation();
+    if (isDeleting) {
+      console.log("Delete already in progress, ignoring second call.");
+      return;
+    }
+    isDeleting = true;
+    console.log("deleteAllButton listener called.");
+
+    chrome.storage.sync.get(null, (items) => {
+      const promptKeys = Object.keys(items).filter(key => key.startsWith('prompt_'));
+      if (promptKeys.length === 0) {
         alert('There are no prompts to delete.');
+        isDeleting = false;
         return;
       }
-      const confirmation = confirm(`Are you sure you want to delete all ${prompts.length} prompts? This action cannot be undone.`);
+      const confirmation = confirm(`Are you sure you want to delete all ${promptKeys.length} prompts? This action cannot be undone.`);
       if (confirmation) {
-        chrome.storage.sync.set({ prompts: [] }, () => {
-          updatePromptCounter();
-          statusDiv.textContent = 'All prompts deleted.';
-          setTimeout(() => {
-            statusDiv.textContent = '';
-          }, 1500);
+        chrome.storage.sync.remove(promptKeys, () => {
+          if (chrome.runtime.lastError) {
+            console.error("Error deleting prompts:", chrome.runtime.lastError);
+            alert("An error occurred while deleting prompts. Please check the console.");
+          } else {
+            console.log("Prompts deleted successfully.");
+            updatePromptCounter();
+            statusDiv.textContent = 'All prompts deleted.';
+            setTimeout(() => {
+              statusDiv.textContent = '';
+            }, 1500);
+          }
+          isDeleting = false;
         });
+      } else {
+        isDeleting = false; // Reset if user cancels
       }
     });
   });
