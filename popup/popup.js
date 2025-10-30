@@ -70,25 +70,36 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       }
 
-      promptCounter.textContent = `saved ${promptCount}/${PROMPT_LIMIT} prompts`;
+      // Ensure PROMPT_LIMIT is a sane number (fallback to 25 if something changed)
+      const limit = Number.isFinite(Number(PROMPT_LIMIT)) ? Number(PROMPT_LIMIT) : 25;
+      promptCounter.textContent = `saved ${promptCount}/${limit} prompts`;
 
       // Show/hide review and upgrade prompts
+      // Review prompt should appear at ~60% of the free limit (README: at 15 when limit=25)
+      // Use Math.ceil to ensure thresholds behave predictably for non-round limits.
       const reviewPrompt = document.getElementById('reviewPrompt');
       const upgradePrompt = document.getElementById('upgradePrompt');
-      const reviewThreshold = Math.floor(PROMPT_LIMIT * 0.6);
       const upgradePromptLink = document.getElementById('upgradePromptLink');
+      const reviewThreshold = Math.ceil(limit * 0.6);
+      const upgradeThreshold = limit;
 
-      if (promptCount >= PROMPT_LIMIT) {
-        upgradePrompt.style.display = 'block';
-        reviewPrompt.style.display = 'none';
+      // Coerce promptCount to a number just in case
+      const count = Number.isFinite(Number(promptCount)) ? Number(promptCount) : 0;
+
+      if (count >= upgradeThreshold) {
+        // At or above the limit: show upgrade prompt
+        if (upgradePrompt) upgradePrompt.style.display = 'block';
+        if (reviewPrompt) reviewPrompt.style.display = 'none';
         if (upgradePromptLink) upgradePromptLink.style.display = 'inline';
-      } else if (promptCount >= reviewThreshold) {
-        reviewPrompt.style.display = 'block';
-        upgradePrompt.style.display = 'none';
+      } else if (count >= reviewThreshold) {
+        // At or above review threshold but below full limit: show review prompt
+        if (reviewPrompt) reviewPrompt.style.display = 'block';
+        if (upgradePrompt) upgradePrompt.style.display = 'none';
         if (upgradePromptLink) upgradePromptLink.style.display = 'none';
       } else {
-        reviewPrompt.style.display = 'none';
-        upgradePrompt.style.display = 'none';
+        // Below thresholds: hide both
+        if (reviewPrompt) reviewPrompt.style.display = 'none';
+        if (upgradePrompt) upgradePrompt.style.display = 'none';
         if (upgradePromptLink) upgradePromptLink.style.display = 'none';
       }
 
