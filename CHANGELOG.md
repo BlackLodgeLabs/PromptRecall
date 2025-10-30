@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.1] 
+# v1.0.1
 ## 2025-10-13
 ### Changed
 - Removed unused `scripting` permission from `manifest.json` after auditing the codebase.
@@ -12,7 +12,7 @@
   - `notifications`: used in the background service worker to show install and other system notifications.
   - `contextMenus`: used to create a right-click "Save Prompt to Prompt Recall" menu for manual prompt capture.
 
-## [1.0.2] 
+# v1.0.2
 ## 2025-10-21
 ### Changed
 
@@ -42,4 +42,19 @@
 - Behaviour preserved: header `upgradeButton` and inline `upgradePrompt` remain active upgrade entry points.
 - Performed a syntax/reference scan on modified files; no syntax or ReferenceError issues were found after the fixes.
 - These edits were in the working tree and are now committed (see commit below).
+
+## 2025-10-30
+### Changed
+- popup: make threshold logic robust — coerce `PROMPT_LIMIT`, compute explicit `reviewThreshold` (Math.ceil 60%) and coerce prompt counts so the review prompt reliably appears at 15 and upgrade at the limit (25). (`popup/popup.js`)
+- content: fix async storage call in content script — wrap `chrome.storage.sync.get` in a Promise to avoid using `await` directly on callback-style API and prevent runtime failures in content scripts. (`content/content.js`)
+- background: ensure service worker imports resolve reliably — use `chrome.runtime.getURL('utils/lz-string.js')` in `importScripts` so LZString is always available in the service worker. (`background/background.js`)
+
+### Files changed
+- `popup/popup.js` — threshold logic and display behavior for review/upgrade prompts.
+- `content/content.js` — compatibility fix for chrome.storage call in content script.
+- `background/background.js` — importScripts path fix for LZString.
+
+### Notes & Validation
+- Searched repository to ensure no remaining uses of `await chrome.storage.sync.get(...)` and confirmed imports use `chrome.runtime.getURL(...)` for LZString.
+- Changes are currently in the working tree and are included in the commit pushed to `prompt-compression` per the attached commit message.
 
