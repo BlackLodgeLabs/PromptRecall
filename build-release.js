@@ -11,12 +11,14 @@ const path = require('path');
 const argv = require('minimist')(process.argv.slice(2));
 
 const outName = argv.out || argv.o || 'prompt-recall-release.zip';
-const version = argv.version || argv.v || '';
 const root = process.cwd();
 const staging = path.join(root, 'build_staging');
 
 (async () => {
   try {
+    const pkg = await fs.readJson(path.join(root, 'package.json'));
+    const version = pkg.version;
+
     await fs.remove(staging);
     await fs.ensureDir(staging);
 
