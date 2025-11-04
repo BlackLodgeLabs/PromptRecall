@@ -34,12 +34,6 @@ jobs:
             node build-release.js --out=${OUT}
           fi
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: prompt-recall-release
-          path: prompt-recall-*.zip
-
       - name: Create GitHub Release and attach artifact
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
