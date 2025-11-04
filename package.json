@@ -4,7 +4,7 @@
   "description": "Prompt Recall - extension packaging helper",
   "private": true,
   "scripts": {
-    "build:release": "node build-release.js --out=prompt-recall-release.zip"
+    "build:release": "node build-release.js"
   },
   "devDependencies": {
     "archiver": "^7.0.1",
