@@ -3,14 +3,37 @@
 importScripts(chrome.runtime.getURL('config.js'), chrome.runtime.getURL('utils/lz-string.js'));
 
 // Create context menu on extension install
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.notifications.create({
-    type: "basic",
-    iconUrl: chrome.runtime.getURL("assets/icons/icon-128.png"),
-    title: "Prompt Recall Installed",
-    message: "Click the icon to view and manage your AI prompts!"
-  });
+chrome.runtime.onInstalled.addListener((details) => {
+  // Default settings for the extension
+  const defaultSites = [
+    "chatgpt.com",
+    "gemini.google.com",
+    "perplexity.ai",
+    "claude.ai",
+    "grok.com"
+  ];
 
+  // On first install, set default settings and open the options page
+  if (details.reason === "install") {
+    chrome.storage.sync.set({
+      showToastNotifications: true,
+      enabledSites: defaultSites,
+      debugVerbose: false
+    }, () => {
+      console.log("Default settings saved.");
+      // Open options page on first install
+      chrome.runtime.openOptionsPage();
+    });
+
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: chrome.runtime.getURL("assets/icons/icon-128.png"),
+      title: "Prompt Recall Installed",
+      message: "Click the icon to view and manage your AI prompts!"
+    });
+  }
+
+  // Re-create context menu on install or update, as it doesn't persist
   chrome.contextMenus.create({
     id: "save-prompt",
     title: "Save Prompt to Prompt Recall",
@@ -25,9 +48,6 @@ chrome.runtime.onInstalled.addListener(() => {
       "https://grok.com/*"
     ]
   });
-
-  // Open options page on first install
-  chrome.runtime.openOptionsPage();
 });
 
 // Log to confirm background script is running
