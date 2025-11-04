@@ -40,10 +40,16 @@ npm run build:release
 
 ---
 
-### 5. Push the created Git tag to your remote GitHub repository
+### 5. Push the version bump commit to the remote main branch
 
-Replace `v1.0.2` with the actual tag name created by `npm version`.
+```bash
+git push origin main
+```
 
+---
+
+### 6. Push the created Git tag to your remote GitHub repository
+ Replace v1.0.1 with the actual tag name created by npm version.
 ```bash
 git push origin v1.0.2
 ```
