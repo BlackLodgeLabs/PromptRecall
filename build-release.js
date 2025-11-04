@@ -10,7 +10,6 @@ const archiver = require('archiver');
 const path = require('path');
 const argv = require('minimist')(process.argv.slice(2));
 
-const outName = argv.out || argv.o || 'prompt-recall-release.zip';
 const root = process.cwd();
 const staging = path.join(root, 'build_staging');
 
@@ -18,6 +17,7 @@ const staging = path.join(root, 'build_staging');
   try {
     const pkg = await fs.readJson(path.join(root, 'package.json'));
     const version = pkg.version;
+    const outName = argv.out || argv.o || `prompt-recall-v${version}.zip`;
 
     await fs.remove(staging);
     await fs.ensureDir(staging);
@@ -72,21 +72,26 @@ const staging = path.join(root, 'build_staging');
     const output = fs.createWriteStream(outPath);
     const archive = archiver('zip', { zlib: { level: 9 } });
 
-    output.on('close', () => {
-      console.log(`${archive.pointer()} total bytes`);
-      console.log('Archive created at:', outPath);
+    await new Promise((resolve, reject) => {
+        output.on('close', () => {
+            console.log(`${archive.pointer()} total bytes`);
+            console.log('Archive created at:', outPath);
+            resolve();
+        });
+        archive.on('warning', (err) => {
+            if (err.code === 'ENOENT') {
+                console.warn(err);
+            } else {
+                reject(err);
+            }
+        });
+        archive.on('error', reject);
+        output.on('error', reject); // Also catch errors from the write stream
+
+        archive.pipe(output);
+        archive.directory(staging + '/', false);
+        archive.finalize();
     });
-
-    archive.on('warning', (err) => {
-      if (err.code === 'ENOENT') console.warn(err);
-      else throw err;
-    });
-
-    archive.on('error', (err) => { throw err; });
-
-    archive.pipe(output);
-    archive.directory(staging + '/', false);
-    await archive.finalize();
 
     // cleanup
     await fs.remove(staging);
