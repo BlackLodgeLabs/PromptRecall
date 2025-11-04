@@ -261,20 +261,42 @@ a:focus {
   gap: var(--space-sm); /* Space between elements */
 }
 
-.search-container {
+.search-bar-wrapper {
   display: flex;
   align-items: center;
   margin-bottom: var(--space-lg);
-  position: relative;
+  gap: var(--space-sm);
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent; /* No visible border by default */
+  border-radius: var(--radius-sm);
+  padding-left: var(--space-sm);
+  transition: border-color var(--transition-fast);
+  flex-grow: 1; /* Allow search container to take available space */
+}
+
+.search-container:focus-within {
+  border-color: var(--color-accent); /* Border appears on focus */
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
 }
 
 #searchInput {
-  padding: var(--space-xs) var(--space-sm);
-  border: 1px solid var(--color-border);
+  padding: var(--space-sm);
+  border: none;
+  outline: none;
   border-radius: var(--radius-sm);
   font-size: 14px;
-  width: 50%;
-  margin-right: var(--space-sm);
+  width: 100%; /* Input takes up available space within its flex container */
+  background-color: transparent;
 }
 
 .prompt-count-header {
