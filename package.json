@@ -1,6 +1,6 @@
 {
   "name": "prompt-recall",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Prompt Recall - extension packaging helper",
   "private": true,
   "scripts": {
